@@ -11,6 +11,8 @@ const PostList = () => {
     error,
     value: posts,
   } = useAsync(() => generalRequest('/posts'));
+  if (loading) return <h1>Loading</h1>;
+  if (error) return <h1 className='error-msg'>{error?.message}</h1>;
   //console.log(error?.message, 'error');
 
   //   useEffect(() => {
@@ -25,9 +27,6 @@ const PostList = () => {
   //     };
   //     fetchData();
   //   }, []);
-
-  if (loading) return <h1>Loading</h1>;
-  if (error) return <h1 className='error-msg'>{error?.message}</h1>;
 
   return (
     <div>
