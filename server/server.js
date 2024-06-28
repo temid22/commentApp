@@ -1,19 +1,21 @@
-import fastify from 'fastify';
-import dotenv from 'dotenv';
-import sensible from '@fastify/sensible';
-import cors from '@fastify/cors';
-import { PrismaClient } from '@prisma/client';
+import fastify from "fastify";
+import dotenv from "dotenv";
+import sensible from "@fastify/sensible";
+import cors from "@fastify/cors";
+import { PrismaClient } from "@prisma/client";
 dotenv.config();
+
+const PORT = process.env.PORT | 9000;
 
 const app = fastify();
 app.register(sensible);
 app.register(cors, {
-  origin: 'http://localhost:5173',
+  origin: "http://localhost:5173",
   credentials: true,
 });
 const prisma = new PrismaClient();
 
-app.get('/api/posts', async (req, res) => {
+app.get("/api/posts", async (req, res) => {
   return await commitTODb(
     prisma.post.findMany({
       select: {
@@ -23,7 +25,8 @@ app.get('/api/posts', async (req, res) => {
     })
   );
 });
-app.get('/api/posts/:id', async (req, res) => {
+
+app.get("/api/posts/:id", async (req, res) => {
   return await commitTODb(
     prisma.post.findUnique({
       where: { id: req.params.id },
@@ -32,7 +35,7 @@ app.get('/api/posts/:id', async (req, res) => {
         title: true,
         comments: {
           orderBy: {
-            createdAt: 'desc',
+            createdAt: "desc",
           },
           select: {
             id: true,
@@ -58,4 +61,6 @@ async function commitTODb(promise) {
   return data;
 }
 
-app.listen({ port: process.env.PORT });
+app.listen({ port: process.env.PORT }, () =>
+  console.log(`app is listening on port ${PORT}`)
+);
